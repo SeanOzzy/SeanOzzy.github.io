@@ -26,10 +26,11 @@ footer-links:
   linkedin: masseysean/
   pinterest:
   rss: # just type anything here for a working RSS icon
-  twitter: SeanMassey
+  twitter: Sean_Massey
   stackoverflow: # your stackoverflow profile, e.g. "users/50476/bart-kiers"
   youtube: # channel/<your_long_string> or user/<user-name>
   googleplus: # anything in your profile username that comes after plus.google.com/
+  disclaimer: Disclaimer
 
 
 # Enter your Disqus shortname (not your username) to enable commenting on posts
