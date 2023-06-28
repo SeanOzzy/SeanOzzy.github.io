@@ -4,12 +4,9 @@ title: About
 permalink: /about/
 ---
 
-Some information about you!
+- Experienced Senior Engineer with over 20 years of expertise I am confident in my ability to handle complex technical projects and deliver optimal results. 
 
 ### More Information
 
-A place to include any other types of information that you'd like to include about yourself.
+Specialties: AWS, RDS SME, EBS SME, Cloud Computing, PostgreSQL SME, MS SQL Server, Database technologies, Linux, Windows, Performance, Bash, Python, strong communication and documentation skills.
 
-### Contact me
-
-[email@domain.com](mailto:email@domain.com)
