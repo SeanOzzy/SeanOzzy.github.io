@@ -1,0 +1,33 @@
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+<!--  created with Free Online Sitemap Generator www.xml-sitemaps.com  -->
+<url>
+<loc>https://seanozzy.github.io/</loc>
+<lastmod>2023-07-01T02:56:45+00:00</lastmod>
+<priority>1.00</priority>
+</url>
+<url>
+<loc>https://seanozzy.github.io/about/</loc>
+<lastmod>2023-07-01T02:56:45+00:00</lastmod>
+<priority>0.80</priority>
+</url>
+<url>
+<loc>https://seanozzy.github.io/Bash-to-Python/</loc>
+<lastmod>2023-07-01T02:56:45+00:00</lastmod>
+<priority>0.80</priority>
+</url>
+<url>
+<loc>https://seanozzy.github.io/OLTP-Query-Optimization-Tips/</loc>
+<lastmod>2023-07-01T02:56:45+00:00</lastmod>
+<priority>0.80</priority>
+</url>
+<url>
+<loc>https://seanozzy.github.io/AboutMe/</loc>
+<lastmod>2023-07-01T02:56:45+00:00</lastmod>
+<priority>0.80</priority>
+</url>
+<url>
+<loc>https://seanozzy.github.io/disclaimer/</loc>
+<lastmod>2023-07-01T02:56:45+00:00</lastmod>
+<priority>0.80</priority>
+</url>
+</urlset>
