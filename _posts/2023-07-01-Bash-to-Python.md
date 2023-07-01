@@ -1,6 +1,6 @@
 ---
 layout: post
-published: False
+published: True
 title: Migrating from Bash to Python3 - An Expert Guide
 ---
 
