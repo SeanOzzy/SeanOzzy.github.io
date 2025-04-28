@@ -111,197 +111,197 @@
 
 <body>
 
-  <div class="header">
-    <h1>📰 RSS Feed Aggregator</h1>
-    <p>Aggregating database, reliability, and monitoring feeds in one place.</p>
-    <img src="images/devops_composite.png" alt="DevOps Ecosystem">
-    <!--img src="https://pigsty.io/blog/pg/pg-eat-db-world/ecosystem.jpg" alt="Ecosystem Image"-->
-  </div>
+<div class="header">
+  <h1>📰 RSS Feed Aggregator</h1>
+  <p>Aggregating database, reliability, and monitoring feeds in one place.</p>
+  <img src="images/devops_composite.png" alt="DevOps Ecosystem">
+</div>
 
-  <div class="controls">
-    <button onclick="toggleTheme()">🌓 Toggle Dark Mode</button>
-    <button onclick="refreshFeeds()">🔄 Refresh Feeds</button>
-    <button onclick="toggleArchive()">📂 Toggle Archives</button>
-    <button onclick="toggleGroup()">🗂️ Group by Feed</button>
-  </div>
+<div class="controls">
+  <button onclick="toggleTheme()">🌓 Toggle Dark Mode</button>
+  <button onclick="refreshFeeds()">🔄 Refresh Feeds</button>
+  <button onclick="toggleArchive()">📂 Toggle Archives</button>
+  <button onclick="toggleGroup()">🗂️ Group by Feed</button>
+</div>
 
-  <div id="loading">Loading feeds, please wait...</div>
-  <div id="feeds"></div>
+<div id="loading">Loading feeds, please wait...</div>
+<div id="feeds"></div>
 
-  <button id="backToTop" onclick="scrollToTop()">⬆️ Top</button>
+<button id="backToTop" onclick="scrollToTop()">⬆️ Top</button>
 
-  <script src="https://unpkg.com/rss-parser/dist/rss-parser.min.js"></script>
-  <script>
-    <!--https://rss.feedspot.com/postgresql_rss_feeds/-->
-    const feeds = [
-      { name: "Database News", url: "https://database.news/feed.xml", favicon: "database.news" },
-      { name: "Postgres Weekly", url: "https://postgresweekly.com/rss/", favicon: "postgresweekly.com" },
-      { name: "Planet PostgreSQL", url: "https://planet.postgresql.org/rss20_short.xml", favicon: "planet.postgresql.org" },
-      { name: "Monitoring Love", url: "https://monitoring.love/feed.xml", favicon: "monitoring.love" },
-      { name: "DBTA", url: "https://www.dbta.com/rss/rss_feeds.aspx", favicon: "dbta.com" },
-      { name: "DevOpIsh Firehose", url: "https://bg.raindrop.io/rss/public/15805349", favicon: "raindrop.io" },
-      { name: "Planet PostGIS", url: "https://planet.postgis.net/rss20.xml", favicon: "planet.postgis.net" },
-      { name: "PGMustard", url: "https://www.pgmustard.com/blog?format=rss" },
-      { name: "Azure for PostgreSQL", url: "https://techcommunity.microsoft.com/t5/s/gxcuf89792/rss/board?board.id=ADforPostgreSQL" },
-      { name: "Software and Booz", url: "https://www.softwareandbooz.com/feed/" },
-      { name: "DBI Services", url: "https://www.dbi-services.com/blog/category/postgresql/feed/" },
-      { name: "PgPedia", url: "https://pgpedia.info/blog/index.html?mode=rdf" },
-      { name: "Postgres FM", url: "https://feeds.transistor.fm/postgres-fm" },
-      { name: "High Scalability", url: "https://highscalability.com/rss/" },
-      { name: "AWS Database Blog", url: "https://aws.amazon.com/blogs/database/feed/" },
-      { name: "CVE Threats )new)", url: "https://cve.threatint.eu/rss/new.rss" }     
-    ];
+<script src="https://unpkg.com/rss-parser/dist/rss-parser.min.js"></script>
+<script>
+const feeds = [
+  { name: "Database News", url: "https://database.news/feed.xml", favicon: "database.news" },
+  { name: "Postgres Weekly", url: "https://postgresweekly.com/rss/", favicon: "postgresweekly.com" },
+  { name: "Planet PostgreSQL", url: "https://planet.postgresql.org/rss20_short.xml", favicon: "planet.postgresql.org" },
+  { name: "Monitoring Love", url: "https://monitoring.love/feed.xml", favicon: "monitoring.love" },
+  { name: "DBTA", url: "https://www.dbta.com/rss/rss_feeds.aspx", favicon: "dbta.com" },
+  { name: "DevOpIsh Firehose", url: "https://bg.raindrop.io/rss/public/15805349", favicon: "raindrop.io" },
+  { name: "Planet PostGIS", url: "https://planet.postgis.net/rss20.xml", favicon: "planet.postgis.net" },
+  { name: "PGMustard", url: "https://www.pgmustard.com/blog?format=rss" },
+  { name: "Azure for PostgreSQL", url: "https://techcommunity.microsoft.com/t5/s/gxcuf89792/rss/board?board.id=ADforPostgreSQL" },
+  { name: "Software and Booz", url: "https://www.softwareandbooz.com/feed/" },
+  { name: "DBI Services", url: "https://www.dbi-services.com/blog/category/postgresql/feed/" },
+  { name: "PgPedia", url: "https://pgpedia.info/blog/index.html?mode=rdf" },
+  { name: "Postgres FM", url: "https://feeds.transistor.fm/postgres-fm" },
+  { name: "High Scalability", url: "https://highscalability.com/rss/" },
+  { name: "AWS Database Blog", url: "https://aws.amazon.com/blogs/database/feed/" },
+  { name: "CVE Threats (new)", url: "https://cve.threatint.eu/rss/new.rss" }
+];
 
-    const corsProxy = "https://api.allorigins.win/raw?url=";
-    const parser = new RSSParser();
-    const feedsContainer = document.getElementById('feeds');
-    const loadingIndicator = document.getElementById('loading');
-    const backToTopButton = document.getElementById('backToTop');
-    let allItems = [];
-    let showArchive = false;
-    let groupByFeed = false;
-    let loadedFeeds = 0;
+const corsProxy = "https://api.allorigins.win/raw?url=";
+const parser = new RSSParser();
+const feedsContainer = document.getElementById('feeds');
+const loadingIndicator = document.getElementById('loading');
+const backToTopButton = document.getElementById('backToTop');
+let allItems = [];
+let showArchive = false;
+let groupByFeed = false;
+let loadedFeeds = 0;
 
-    async function fetchFeeds() {
-      loadingIndicator.style.display = 'block';
-      loadingIndicator.innerText = `Loading feeds (0/${feeds.length})...`;
-      feedsContainer.innerHTML = '';
-      allItems = [];
-      loadedFeeds = 0;
+async function fetchFeeds() {
+  loadingIndicator.style.display = 'block';
+  feedsContainer.innerHTML = '';
+  allItems = [];
+  loadedFeeds = 0;
 
-      const fetchPromises = feeds.map(async (feed) => {
-        try {
-          const response = await fetch(corsProxy + encodeURIComponent(feed.url));
-          const text = await response.text();
-          const parsed = await parser.parseString(text);
+  const fetchPromises = feeds.map(async (feed) => {
+    try {
+      const response = await fetch(corsProxy + encodeURIComponent(feed.url));
+      const text = await response.text();
+      const parsed = await parser.parseString(text);
 
-          parsed.items.forEach(item => {
-            const pubDate = new Date(item.pubDate || item.isoDate || Date.now());
-            allItems.push({
-              title: item.title,
-              link: item.link,
-              pubDate: pubDate,
-              feedName: feed.name
-            });
-          });
-
-          loadedFeeds++;
-          loadingIndicator.innerText = `Loading feeds (${loadedFeeds}/${feeds.length})...`;
-
-        } catch (err) {
-          console.error('Error loading feed:', feed.url, err);
-          loadedFeeds++;
-          loadingIndicator.innerText = `Loading feeds (${loadedFeeds}/${feeds.length})...`;
-        }
+      parsed.items.forEach(item => {
+        const pubDate = new Date(item.pubDate || item.isoDate || Date.now());
+        allItems.push({
+          title: item.title,
+          link: item.link,
+          pubDate: pubDate,
+          feedName: feed.name
+        });
       });
-
-      await Promise.all(fetchPromises); // 🚀 Load feeds in parallel
-
-      allItems.sort((a, b) => b.pubDate - a.pubDate);
-
-      renderFeeds();
+    } catch (err) {
+      console.error('Error loading feed:', feed.url, err);
+    } finally {
+      loadedFeeds++;
+      loadingIndicator.innerText = `Loading feeds (${loadedFeeds}/${feeds.length})...`;
     }
+  });
 
-    function renderFeeds() {
-      loadingIndicator.style.display = 'none';
-      feedsContainer.innerHTML = '';
+  await Promise.all(fetchPromises);
+  allItems.sort((a, b) => b.pubDate - a.pubDate);
+  renderFeeds();
+}
 
-      const today = new Date();
-      const daysAgo30 = new Date();
-      daysAgo30.setDate(today.getDate() - 30);
+function renderFeeds() {
+  loadingIndicator.style.display = 'none';
+  feedsContainer.innerHTML = '';
 
-      const recentItems = allItems.filter(item => item.pubDate >= daysAgo30);
-      const archiveItems = allItems.filter(item => item.pubDate < daysAgo30);
-      const itemsToDisplay = showArchive ? archiveItems : recentItems;
+  const today = new Date();
+  const daysAgo30 = new Date();
+  daysAgo30.setDate(today.getDate() - 30);
 
-      if (itemsToDisplay.length === 0) {
-        feedsContainer.innerHTML = '<p>No posts found in this range.</p>';
-        return;
-      }
+  const recentItems = allItems.filter(item => item.pubDate >= daysAgo30);
+  const archiveItems = allItems.filter(item => item.pubDate < daysAgo30);
+  const itemsToDisplay = showArchive ? archiveItems : recentItems;
 
-      if (showArchive) {
-        feedsContainer.innerHTML = `<div class="archive-notice">📂 Viewing archive posts (older than 30 days)</div>`;
-      }
+  if (itemsToDisplay.length === 0) {
+    feedsContainer.innerHTML = '<p>No posts found in this range.</p>';
+    return;
+  }
 
-      if (!groupByFeed) {
-        itemsToDisplay.sort((a, b) => b.pubDate - a.pubDate);
-        itemsToDisplay.forEach(item => renderItem(item));
-      } else {
-        const grouped = {};
-        itemsToDisplay.forEach(item => {
-          if (!grouped[item.feedName]) grouped[item.feedName] = [];
-          grouped[item.feedName].push(item);
-        });
+  if (showArchive) {
+    feedsContainer.innerHTML = `<div class="archive-notice">📂 Viewing archive posts (older than 30 days)</div>`;
+  }
 
-        Object.keys(grouped).sort().forEach(feedName => {
-          const section = document.createElement('div');
-          section.className = 'feed-section';
-          section.innerHTML = `<div class="feed-title">📰 ${feedName}</div>`;
-          grouped[feedName].sort((a, b) => b.pubDate - a.pubDate);
-          grouped[feedName].forEach(item => {
-            section.appendChild(renderItem(item, true));
-          });
-          feedsContainer.appendChild(section);
-        });
-      }
-    }
-
-    function renderItem(item, returnElement = false) {
-      const faviconUrl = `https://www.google.com/s2/favicons?sz=32&domain_url=${getFaviconDomain(item.feedName)}`;
-      const itemDiv = document.createElement('div');
-      itemDiv.className = 'item';
-      itemDiv.innerHTML = `
-        <img src="${faviconUrl}" alt="" style="vertical-align: middle; margin-right:5px; width:16px; height:16px;" 
-          onerror="this.onerror=null;this.src='https://upload.wikimedia.org/wikipedia/commons/6/6b/Feedbin-Icon-home.png';">
-        <strong>[${item.feedName}]</strong><br>
-        <a href="${item.link}" target="_blank">${item.title}</a><br>
-        <small>${item.pubDate.toLocaleString()}</small>
-      `;
-      if (returnElement) {
-        return itemDiv;
-      } else {
-        feedsContainer.appendChild(itemDiv);
-      }
-    }
-
-    function getFaviconDomain(feedName) {
-      const match = feeds.find(f => f.name === feedName);
-      return match ? match.favicon : '';
-    }
-
-    function refreshFeeds() {
-      fetchFeeds();
-    }
-
-    function toggleTheme() {
-      document.body.classList.toggle('dark-mode');
-    }
-
-    function toggleArchive() {
-      showArchive = !showArchive;
-      renderFeeds();
-    }
-
-    function toggleGroup() {
-      groupByFeed = !groupByFeed;
-      renderFeeds();
-    }
-
-    function scrollToTop() {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    window.addEventListener('scroll', () => {
-      if (window.scrollY > 300) {
-        backToTopButton.style.display = 'block';
-      } else {
-        backToTopButton.style.display = 'none';
-      }
+  if (!groupByFeed) {
+    itemsToDisplay.forEach(item => renderItem(item));
+  } else {
+    const grouped = {};
+    itemsToDisplay.forEach(item => {
+      if (!grouped[item.feedName]) grouped[item.feedName] = [];
+      grouped[item.feedName].push(item);
     });
 
-    // Initial load
-    fetchFeeds();
-  </script>
+    Object.keys(grouped).sort().forEach(feedName => {
+      const section = document.createElement('div');
+      section.className = 'feed-section';
+      section.innerHTML = `<div class="feed-title">📰 ${feedName}</div>`;
+      grouped[feedName].sort((a, b) => b.pubDate - a.pubDate);
+      grouped[feedName].forEach(item => {
+        section.appendChild(renderItem(item, true));
+      });
+      feedsContainer.appendChild(section);
+    });
+  }
+}
+
+function renderItem(item, returnElement = false) {
+  const domain = getFaviconDomain(item.feedName, item.link);
+  const faviconUrl = `https://www.google.com/s2/favicons?sz=32&domain_url=${domain}`;
+  const itemDiv = document.createElement('div');
+  itemDiv.className = 'item';
+  itemDiv.innerHTML = `
+    <img src="${faviconUrl}" alt="" style="vertical-align: middle; margin-right:5px; width:16px; height:16px;" 
+      onerror="this.onerror=null;this.src='https://upload.wikimedia.org/wikipedia/commons/6/6b/Feedbin-Icon-home.png';">
+    <strong>[${item.feedName}]</strong><br>
+    <a href="${item.link}" target="_blank">${item.title}</a><br>
+    <small>${item.pubDate.toLocaleString()}</small>
+  `;
+  if (returnElement) {
+    return itemDiv;
+  } else {
+    feedsContainer.appendChild(itemDiv);
+  }
+}
+
+function getFaviconDomain(feedName, feedLink) {
+  const feedObj = feeds.find(f => f.name === feedName);
+  if (feedObj && feedObj.favicon) {
+    return feedObj.favicon;
+  } else {
+    try {
+      const url = new URL(feedLink);
+      return url.hostname.replace(/^www\./, '');
+    } catch (e) {
+      return 'example.com';
+    }
+  }
+}
+
+function refreshFeeds() {
+  fetchFeeds();
+}
+
+function toggleTheme() {
+  document.body.classList.toggle('dark-mode');
+}
+
+function toggleArchive() {
+  showArchive = !showArchive;
+  renderFeeds();
+}
+
+function toggleGroup() {
+  groupByFeed = !groupByFeed;
+  renderFeeds();
+}
+
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 300) {
+    backToTopButton.style.display = 'block';
+  } else {
+    backToTopButton.style.display = 'none';
+  }
+});
+
+fetchFeeds();
+</script>
 
 </body>
 </html>
