@@ -6,7 +6,7 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      max-width: 800px;
+      max-width: 900px;
       margin: auto;
       padding: 1rem;
       background-color: var(--bg);
@@ -23,58 +23,136 @@
     }
     .header {
       display: flex;
-      justify-content: space-between;
+      flex-direction: column;
       align-items: center;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    .header img {
+      width: 100%;
+      height: auto;
+      border-radius: 10px;
+      margin: 1rem 0;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+    .controls {
+      margin: 1rem 0;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .controls button {
+      margin: 0.5rem;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      background-color: #007acc;
+      color: white;
+      transition: background-color 0.3s;
+    }
+    .controls button:hover {
+      background-color: #005f99;
     }
     .feed {
       margin-bottom: 2rem;
     }
     .item {
-      margin: 0.5rem 0;
+      margin: 0.8rem 0;
+      padding: 0.8rem;
+      border-bottom: 1px solid #ccc;
     }
     .item a {
       text-decoration: none;
       color: #007acc;
+      font-weight: bold;
     }
-    button {
-      margin-left: 1rem;
-      padding: 0.5rem 1rem;
+    .archive-notice {
+      margin: 2rem 0 1rem;
+      text-align: center;
+      font-style: italic;
+      opacity: 0.7;
+    }
+    #loading {
+      text-align: center;
+      margin: 2rem;
+      font-size: 1.2rem;
+    }
+    #backToTop {
+      display: none;
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      z-index: 100;
       font-size: 1rem;
+      padding: 0.7rem 1.2rem;
+      border: none;
+      border-radius: 50px;
+      background-color: #007acc;
+      color: white;
       cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+    #backToTop:hover {
+      background-color: #005f99;
+    }
+    .feed-section {
+      margin-top: 2rem;
+    }
+    .feed-title {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+      border-bottom: 2px solid #ccc;
+      padding-bottom: 0.5rem;
     }
   </style>
 </head>
 <body>
 
   <div class="header">
-    <h1>RSS Feed Aggregator</h1>
-    <div>
-      <button onclick="toggleTheme()">Toggle Dark Mode</button>
-      <button onclick="refreshFeeds()">🔄 Refresh</button>
-    </div>
-    <p>Aggregating various reliability/database-related RSS feeds for easy access.</p>
+    <h1>📰 RSS Feed Aggregator</h1>
+    <p>Aggregating database, reliability, and monitoring feeds in one place.</p>
+    <img src="https://pigsty.io/blog/pg/pg-eat-db-world/ecosystem.jpg" alt="Ecosystem Image">
   </div>
 
+  <div class="controls">
+    <button onclick="toggleTheme()">🌓 Toggle Dark Mode</button>
+    <button onclick="refreshFeeds()">🔄 Refresh</button>
+    <button onclick="toggleArchive()">📂 Toggle Archives</button>
+    <button onclick="toggleGroup()">🗂️ Group by Feed</button>
+  </div>
+
+  <div id="loading">Loading feeds, please wait...</div>
   <div id="feeds"></div>
+
+  <button id="backToTop" onclick="scrollToTop()">⬆️ Top</button>
 
   <script src="https://unpkg.com/rss-parser/dist/rss-parser.min.js"></script>
   <script>
     const feeds = [
-      { name: "Database News", url: "https://database.news/feed.xml" },
-      { name: "Postgres Weekly", url: "https://postgresweekly.com/rss/" },
-      { name: "Planet PostgreSQL", url: "https://planet.postgresql.org/rss20_short.xml" },
-      { name: "Monitoring Love", url: "https://monitoring.love/feed.xml" },
-      { name: "DBTA", url: "https://www.dbta.com/rss/rss_feeds.aspx" },
-      { name: "DevOpIsh Firehose", url: "https://bg.raindrop.io/rss/public/15805349" },
-      { name: "Planet PostGIS", url: "https://planet.postgis.net/rss20.xml" }
+      { name: "Database News", url: "https://database.news/feed.xml", favicon: "database.news" },
+      { name: "Postgres Weekly", url: "https://postgresweekly.com/rss/", favicon: "postgresweekly.com" },
+      { name: "Planet PostgreSQL", url: "https://planet.postgresql.org/rss20_short.xml", favicon: "planet.postgresql.org" },
+      { name: "Monitoring Love", url: "https://monitoring.love/feed.xml", favicon: "monitoring.love" },
+      { name: "DBTA", url: "https://www.dbta.com/rss/rss_feeds.aspx", favicon: "dbta.com" },
+      { name: "DevOpIsh Firehose", url: "https://bg.raindrop.io/rss/public/15805349", favicon: "raindrop.io" },
+      { name: "Planet PostGIS", url: "https://planet.postgis.net/rss20.xml", favicon: "planet.postgis.net" }
     ];
 
-    const corsProxy = "https://api.allorigins.win/raw?url="; // <-- Important: /raw
+    const corsProxy = "https://api.allorigins.win/raw?url=";
     const parser = new RSSParser();
     const feedsContainer = document.getElementById('feeds');
+    const loadingIndicator = document.getElementById('loading');
+    const backToTopButton = document.getElementById('backToTop');
+    let allItems = [];
+    let showArchive = false;
+    let groupByFeed = false; // Default to global date-sorted view
 
     async function fetchFeeds() {
-      const allItems = [];
+      loadingIndicator.style.display = 'block';
+      feedsContainer.innerHTML = '';
+      allItems = [];
 
       for (const feed of feeds) {
         try {
@@ -83,10 +161,11 @@
           const parsed = await parser.parseString(text);
 
           parsed.items.forEach(item => {
+            const pubDate = new Date(item.pubDate || item.isoDate || Date.now());
             allItems.push({
               title: item.title,
               link: item.link,
-              pubDate: new Date(item.pubDate || item.isoDate || Date.now()),
+              pubDate: pubDate,
               feedName: feed.name
             });
           });
@@ -95,22 +174,77 @@
         }
       }
 
-      // Sort by date descending
       allItems.sort((a, b) => b.pubDate - a.pubDate);
 
-      // Render
+      renderFeeds();
+    }
+
+    function renderFeeds() {
+      loadingIndicator.style.display = 'none';
       feedsContainer.innerHTML = '';
-      const feedDiv = document.createElement('div');
-      feedDiv.className = 'feed';
 
-      allItems.forEach(item => {
-        const itemDiv = document.createElement('div');
-        itemDiv.className = 'item';
-        itemDiv.innerHTML = `<strong>[${item.feedName}]</strong> <a href="${item.link}" target="_blank">${item.title}</a> <small>(${item.pubDate.toLocaleString()})</small>`;
-        feedDiv.appendChild(itemDiv);
-      });
+      const today = new Date();
+      const daysAgo30 = new Date();
+      daysAgo30.setDate(today.getDate() - 30);
 
-      feedsContainer.appendChild(feedDiv);
+      const recentItems = allItems.filter(item => item.pubDate >= daysAgo30);
+      const archiveItems = allItems.filter(item => item.pubDate < daysAgo30);
+      const itemsToDisplay = showArchive ? archiveItems : recentItems;
+
+      if (itemsToDisplay.length === 0) {
+        feedsContainer.innerHTML = '<p>No posts found in this range.</p>';
+        return;
+      }
+
+      if (showArchive) {
+        feedsContainer.innerHTML = `<div class="archive-notice">📂 Viewing archive posts (older than 30 days)</div>`;
+      }
+
+      if (!groupByFeed) {
+        // Unified timeline
+        itemsToDisplay.sort((a, b) => b.pubDate - a.pubDate);
+        itemsToDisplay.forEach(item => renderItem(item));
+      } else {
+        // Group by feed
+        const grouped = {};
+        itemsToDisplay.forEach(item => {
+          if (!grouped[item.feedName]) grouped[item.feedName] = [];
+          grouped[item.feedName].push(item);
+        });
+
+        Object.keys(grouped).sort().forEach(feedName => {
+          const section = document.createElement('div');
+          section.className = 'feed-section';
+          section.innerHTML = `<div class="feed-title">📰 ${feedName}</div>`;
+          grouped[feedName].sort((a, b) => b.pubDate - a.pubDate);
+          grouped[feedName].forEach(item => {
+            section.appendChild(renderItem(item, true));
+          });
+          feedsContainer.appendChild(section);
+        });
+      }
+    }
+
+    function renderItem(item, returnElement = false) {
+      const faviconUrl = `https://www.google.com/s2/favicons?sz=32&domain_url=${getFaviconDomain(item.feedName)}`;
+      const itemDiv = document.createElement('div');
+      itemDiv.className = 'item';
+      itemDiv.innerHTML = `
+        <img src="${faviconUrl}" alt="" style="vertical-align: middle; margin-right:5px; width:16px; height:16px;" onerror="this.onerror=null;this.src='https://upload.wikimedia.org/wikipedia/commons/6/6b/Feedbin-Icon-home.png';">
+        <strong>[${item.feedName}]</strong><br>
+        <a href="${item.link}" target="_blank">${item.title}</a><br>
+        <small>${item.pubDate.toLocaleString()}</small>
+      `;
+      if (returnElement) {
+        return itemDiv;
+      } else {
+        feedsContainer.appendChild(itemDiv);
+      }
+    }
+
+    function getFaviconDomain(feedName) {
+      const match = feeds.find(f => f.name === feedName);
+      return match ? match.favicon : '';
     }
 
     function refreshFeeds() {
@@ -120,6 +254,28 @@
     function toggleTheme() {
       document.body.classList.toggle('dark-mode');
     }
+
+    function toggleArchive() {
+      showArchive = !showArchive;
+      renderFeeds();
+    }
+
+    function toggleGroup() {
+      groupByFeed = !groupByFeed;
+      renderFeeds();
+    }
+
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 300) {
+        backToTopButton.style.display = 'block';
+      } else {
+        backToTopButton.style.display = 'none';
+      }
+    });
 
     // Initial load
     fetchFeeds();
