@@ -47,11 +47,12 @@
 <body>
 
   <div class="header">
-    <h1>📰 My RSS Aggregator v2</h1>
+    <h1>RSS Feed Aggregator</h1>
     <div>
       <button onclick="toggleTheme()">Toggle Dark Mode</button>
       <button onclick="refreshFeeds()">🔄 Refresh</button>
     </div>
+    <p>Aggregating various reliability/database-related RSS feeds for easy access.</p>
   </div>
 
   <div id="feeds"></div>
@@ -64,7 +65,8 @@
       { name: "Planet PostgreSQL", url: "https://planet.postgresql.org/rss20_short.xml" },
       { name: "Monitoring Love", url: "https://monitoring.love/feed.xml" },
       { name: "DBTA", url: "https://www.dbta.com/rss/rss_feeds.aspx" },
-      { name: "DevOpIsh Firehost", url: "https://bg.raindrop.io/rss/public/15805349" }
+      { name: "DevOpIsh Firehose", url: "https://bg.raindrop.io/rss/public/15805349" },
+      { name: "Planet PostGIS", url: "https://planet.postgis.net/rss20.xml" }
     ];
 
     const corsProxy = "https://api.allorigins.win/raw?url="; // <-- Important: /raw
