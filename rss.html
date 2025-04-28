@@ -38,8 +38,8 @@
     .controls {
       margin: 1rem 0;
       display: flex;
-      justify-content: center;
       flex-wrap: wrap;
+      justify-content: center;
     }
     .controls button {
       margin: 0.5rem;
@@ -74,6 +74,15 @@
       font-style: italic;
       opacity: 0.7;
     }
+    .feed-section {
+      margin-top: 2rem;
+    }
+    .feed-title {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+      border-bottom: 2px solid #ccc;
+      padding-bottom: 0.5rem;
+    }
     #loading {
       text-align: center;
       margin: 2rem;
@@ -97,17 +106,9 @@
     #backToTop:hover {
       background-color: #005f99;
     }
-    .feed-section {
-      margin-top: 2rem;
-    }
-    .feed-title {
-      font-size: 1.5rem;
-      margin-bottom: 0.5rem;
-      border-bottom: 2px solid #ccc;
-      padding-bottom: 0.5rem;
-    }
   </style>
 </head>
+
 <body>
 
   <div class="header">
@@ -118,7 +119,7 @@
 
   <div class="controls">
     <button onclick="toggleTheme()">🌓 Toggle Dark Mode</button>
-    <button onclick="refreshFeeds()">🔄 Refresh</button>
+    <button onclick="refreshFeeds()">🔄 Refresh Feeds</button>
     <button onclick="toggleArchive()">📂 Toggle Archives</button>
     <button onclick="toggleGroup()">🗂️ Group by Feed</button>
   </div>
@@ -147,7 +148,7 @@
     const backToTopButton = document.getElementById('backToTop');
     let allItems = [];
     let showArchive = false;
-    let groupByFeed = false; // Default to global date-sorted view
+    let groupByFeed = false;
 
     async function fetchFeeds() {
       loadingIndicator.style.display = 'block';
@@ -201,11 +202,9 @@
       }
 
       if (!groupByFeed) {
-        // Unified timeline
         itemsToDisplay.sort((a, b) => b.pubDate - a.pubDate);
         itemsToDisplay.forEach(item => renderItem(item));
       } else {
-        // Group by feed
         const grouped = {};
         itemsToDisplay.forEach(item => {
           if (!grouped[item.feedName]) grouped[item.feedName] = [];
@@ -230,7 +229,8 @@
       const itemDiv = document.createElement('div');
       itemDiv.className = 'item';
       itemDiv.innerHTML = `
-        <img src="${faviconUrl}" alt="" style="vertical-align: middle; margin-right:5px; width:16px; height:16px;" onerror="this.onerror=null;this.src='https://upload.wikimedia.org/wikipedia/commons/6/6b/Feedbin-Icon-home.png';">
+        <img src="${faviconUrl}" alt="" style="vertical-align: middle; margin-right:5px; width:16px; height:16px;" 
+          onerror="this.onerror=null;this.src='https://upload.wikimedia.org/wikipedia/commons/6/6b/Feedbin-Icon-home.png';">
         <strong>[${item.feedName}]</strong><br>
         <a href="${item.link}" target="_blank">${item.title}</a><br>
         <small>${item.pubDate.toLocaleString()}</small>
