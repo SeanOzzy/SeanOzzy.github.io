@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>My RSS Feed Aggregator v2</title>
+  <title>RSS Feed Aggregator</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -42,10 +42,6 @@
       font-size: 1rem;
       cursor: pointer;
     }
-    select {
-      margin-left: 1rem;
-      padding: 0.5rem;
-    }
   </style>
 </head>
 <body>
@@ -71,7 +67,7 @@
       { name: "DevOpIsh Firehost", url: "https://bg.raindrop.io/rss/public/15805349" }
     ];
 
-    const corsProxy = "https://api.allorigins.win/get?url=";
+    const corsProxy = "https://api.allorigins.win/raw?url="; // <-- Important: /raw
     const parser = new RSSParser();
     const feedsContainer = document.getElementById('feeds');
 
@@ -81,8 +77,8 @@
       for (const feed of feeds) {
         try {
           const response = await fetch(corsProxy + encodeURIComponent(feed.url));
-          const data = await response.json();
-          const parsed = await parser.parseString(data.contents);
+          const text = await response.text();
+          const parsed = await parser.parseString(text);
 
           parsed.items.forEach(item => {
             allItems.push({
@@ -97,7 +93,7 @@
         }
       }
 
-      // Sort all items by date (descending)
+      // Sort by date descending
       allItems.sort((a, b) => b.pubDate - a.pubDate);
 
       // Render
