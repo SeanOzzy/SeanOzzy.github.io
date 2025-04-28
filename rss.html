@@ -29,7 +29,7 @@
       margin-bottom: 1rem;
     }
     .header img {
-      width: 25%;
+      width: 50%;
       height: auto;
       border-radius: 10px;
       margin: 1rem 0;
@@ -158,13 +158,16 @@
     let allItems = [];
     let showArchive = false;
     let groupByFeed = false;
+    let loadedFeeds = 0;
 
     async function fetchFeeds() {
       loadingIndicator.style.display = 'block';
+      loadingIndicator.innerText = `Loading feeds (0/${feeds.length})...`;
       feedsContainer.innerHTML = '';
       allItems = [];
+      loadedFeeds = 0;
 
-      for (const feed of feeds) {
+      const fetchPromises = feeds.map(async (feed) => {
         try {
           const response = await fetch(corsProxy + encodeURIComponent(feed.url));
           const text = await response.text();
@@ -179,10 +182,18 @@
               feedName: feed.name
             });
           });
+
+          loadedFeeds++;
+          loadingIndicator.innerText = `Loading feeds (${loadedFeeds}/${feeds.length})...`;
+
         } catch (err) {
           console.error('Error loading feed:', feed.url, err);
+          loadedFeeds++;
+          loadingIndicator.innerText = `Loading feeds (${loadedFeeds}/${feeds.length})...`;
         }
-      }
+      });
+
+      await Promise.all(fetchPromises); // 🚀 Load feeds in parallel
 
       allItems.sort((a, b) => b.pubDate - a.pubDate);
 
